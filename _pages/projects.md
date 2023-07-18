@@ -1,12 +1,13 @@
 ---
-layout: page
-title: projects
+layout: projectcv
+title: projects+cv
 permalink: /projects/
 description: ""
-nav: true
+nav: false
 nav_order: 2
 display_categories: [work, fun]
 horizontal: false
+cv_pdf: Holly_Liu_Resume.pdf
 ---
 
 <!-- pages/projects.md -->
