@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://SQDNK.github.io/sqdnk/sitemap.xml
+Sitemap: https://SQDNK.github.io/sitemap.xml
