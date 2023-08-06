@@ -18,15 +18,19 @@ social: false # includes social icons at the bottom of the page
 cv_pdf: Holly_Liu_Resume.pdf
 ---
 
-Hi! I'm Holly. I worked at IBM for a bit after graduating from Carnegie Mellon in 2021.
+Hi, I'm Holly. I worked at IBM for a bit after graduating from Carnegie Mellon in 2021.
 My interests include marathon running (still a very far-fetched goal), gaming (waiting
 for Hades 2), figure drawing, 2D and 3D animation, math, and politics. Feel free
 to reach out!
 
-Currently, I'm looking for work.
+Currently I'm looking for work.
 
 [Github](https://github.com/SQDNK)
 [LinkedIn](https://www.linkedin.com/in/holly-liu-595178163/)
 [Facebook](https://www.facebook.com/holly.liu.501/)
 [Email](hsliu@alumni.cmu.edu)
 Discord: nampp0
+
+A little comment: I really like the following quote. It's great at embodying people of the 21st century.
+Truly a remarkable aphorism worthy of modern history texts.
+"get the \*\*\*\* outta my way I'm gonna get paid"-Kali Uchis.
