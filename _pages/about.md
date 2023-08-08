@@ -30,7 +30,3 @@ Currently I'm looking for work.
 [Facebook](https://www.facebook.com/holly.liu.501/)
 [Email](hsliu@alumni.cmu.edu)
 Discord: nampp0
-
-A little comment: I really like the following quote. It's great at embodying people of the 21st century.
-Truly a remarkable aphorism worthy of modern history texts.
-"get the \*\*\*\* outta my way I'm gonna get paid"-Kali Uchis.
