@@ -114,16 +114,16 @@
 [React.js, Express.js, Node.js, TailwindCSS]</p>
 
 <p>motivation: spotify’s current recommendation system uses user’s entire history of tracks to find
-new songs. instead, i wanted to see if better recommendations could be found by statistically
+new songs. as an alternative, i wanted to see if better recommendations could be found by statistically
 analyzing a group of user-chosen songs based on their audio features alone.</p>
 
 <p>results: there are associations between certain audio feature distances. for example,
 using all songs in spotify’s Hot Pink playlist, we find that |acousticness - energy| and
 |acousticness - danceability| has a positive linear correlation with r = .73.
-this is then used to calibrate the recommendation api with a range (min, target, max) for
+this is used to calibrate the recommendation api with a range (min, target, max) for
 these specific features.</p>
 
-<p>successful or not: we can determine success by how much users liked the recommendations,
+<p>success: we can determine success by how much users liked the recommendations,
 or concretely, by how many of the recommendations they added to their playlists and how
 often those songs are listened to.</p>
 
