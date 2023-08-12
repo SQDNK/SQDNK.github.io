@@ -3,7 +3,7 @@ layout: page
 title: photo-to-3D-mesh
 description: create cartoon mesh from portrait using Blender's source code
 img:
-importance: 1
+importance: 2
 category: work
 ---
 
