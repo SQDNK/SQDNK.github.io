@@ -10,9 +10,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>playlist-generator | Holly S. Liu</title>
+    <title>dynamic memory allocator | Holly S. Liu</title>
     <meta name="author" content="Holly S. Liu">
-    <meta name="description" content="fine-tune song recommendations using Spotify's API">
+    <meta name="description" content="a project of 15-213 Computer Systems at CMU">
     <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
 
 
@@ -38,7 +38,7 @@
     <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%E2%9A%9B%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
     
     <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="canonical" href="https://sqdnk.github.io/projects/2_project/">
+    <link rel="canonical" href="https://sqdnk.github.io/projects/memory/">
 
     <!-- Dark Mode -->
     
@@ -105,29 +105,14 @@
         <div class="post">
 
           <header class="post-header">
-            <h1 class="post-title">playlist-generator</h1>
-            <p class="post-description">fine-tune song recommendations using Spotify's API</p>
+            <h1 class="post-title">dynamic memory allocator</h1>
+            <p class="post-description">a project of 15-213 Computer Systems at CMU</p>
           </header>
 
           <article>
-            <p><a href="https://github.com/SQDNK/playlist-generator" rel="external nofollow noopener" target="_blank">code. </a>
-[React.js, Express.js, Node.js, TailwindCSS]</p>
+            <p><a href="">private repo</a>.</p>
 
-<p>motivation: spotify’s current recommendation system uses user’s entire history of tracks to find
-new songs. as an alternative, i wanted to see if better recommendations could be found by statistically
-analyzing a group of user-chosen songs based on their audio features alone.</p>
-
-<p>results: there are associations between certain audio feature distances. for example,
-using all songs in spotify’s Hot Pink playlist, we find that |acousticness - energy| and
-|acousticness - danceability| has a positive linear correlation with r = .73.
-this is used to calibrate the recommendation api with a range (min, target, max) for
-these specific features.</p>
-
-<p>success: we can determine success by how much users liked the recommendations,
-or concretely, by how many of the recommendations they added to their playlists and how
-often those songs are listened to.</p>
-
-<p>(once deployed, try it here and see if it works for you :) )</p>
+<p>I am particularly proud and sentimental of this project because it was hard and my final grade was 99%. I maxed out the throughput and utilization metrics but could not figure out how to get the final 1%.</p>
 
           </article>
 
