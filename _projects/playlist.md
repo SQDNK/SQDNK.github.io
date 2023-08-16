@@ -15,7 +15,7 @@ new songs. as an alternative, i wanted to see if better recommendations could be
 analyzing a group of user-chosen songs based on their audio features alone.
 
 results: there are associations between certain audio feature distances. for example,
-using all songs in spotify's Hot Pink playlist, we find that |acousticness - energy| and
+using all songs in spotify's Hot Pink playlist, i find that |acousticness - energy| and
 |acousticness - danceability| has a positive linear correlation with r = .73.
 this is used to calibrate the recommendation api with a range (min, target, max) for
 these specific features.
@@ -23,5 +23,7 @@ these specific features.
 success: we can determine success by how much users liked the recommendations,
 or concretely, by how many of the recommendations they added to their playlists and how
 often those songs are listened to.
+
+references:
 
 (once deployed, try it here and see if it works for you :) )
