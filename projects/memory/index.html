@@ -116,29 +116,25 @@
 
 <p>/——————————–Seglist design——————————–/</p>
 
-<ul>
-  <li>There are 15 explicit seglists beginning with the minimum block size</li>
-  <li>currently set at 16. All seglists are of type (block_t *) except for the</li>
-  <li>seglist containing blocks of size 16, which is of type (m_block_t *).</li>
-  <li>Functions used for (block_t *) are also used for (m_block_t *) by casting</li>
-  <li>
-    <h2 id="pointers">pointers.</h2>
-  </li>
-  <li>All non-mini (blocks of size 16) free blocks are footerless. To find the</li>
-  <li>previous block in function coalesce_block, the second to last bit of each</li>
-  <li>block is set if the previous block is allocated. To know if the previous</li>
-  <li>block is a mini, the third to last bit of each block is set if so.</li>
-</ul>
+<p>There are 15 explicit seglists beginning with the minimum block size
+currently set at 16. All seglists are of type (block_t *) except for the
+seglist containing blocks of size 16, which is of type (m_block_t *).
+Functions used for (block_t *) are also used for (m_block_t *) by casting pointers.</p>
+
+<p>All non-mini (blocks of size 16) free blocks are footerless. To find the
+previous block in function coalesce_block, the second to last bit of each
+block is set if the previous block is allocated. To know if the previous
+block is a mini, the third to last bit of each block is set if so.</p>
 
 <p>/———————————-Functions———————————–/</p>
 
 <ul>
-  <li>@brief Packs the <code class="language-plaintext highlighter-rouge">size</code>, <code class="language-plaintext highlighter-rouge">alloc</code>, ‘p_alloc’, and ‘p_mini’ of a block into a</li>
-  <li>word suitable for use as a packed value.</li>
-  <li>Packed values are used for both headers and footers.</li>
-  <li>The allocation status is packed into the lowest bit of the word. The</li>
-  <li>allocation status of the previous block is packed into the second lowest bit.</li>
-  <li>The mini status of the previous block is packed into the third lowest bit.</li>
+  <li>@brief Packs the <code class="language-plaintext highlighter-rouge">size</code>, <code class="language-plaintext highlighter-rouge">alloc</code>, ‘p_alloc’, and ‘p_mini’ of a block into a
+word suitable for use as a packed value.
+Packed values are used for both headers and footers.
+The allocation status is packed into the lowest bit of the word. The
+allocation status of the previous block is packed into the second lowest bit.
+The mini status of the previous block is packed into the third lowest bit.</li>
   <li>@param[in] size The size of the block being represented</li>
   <li>@param[in] alloc True if the block is allocated</li>
   <li>@param[in] p_alloc True if the previous block is allocated</li>
@@ -146,15 +142,14 @@
   <li>
     <p>@return The packed value</p>
   </li>
-  <li>@brief Given a payload pointer, returns a pointer to the corresponding</li>
-  <li>block.</li>
+  <li>@brief Given a payload pointer, returns a pointer to the corresponding block.</li>
   <li>@param[in] bp A pointer to a block’s payload</li>
   <li>
     <p>@return The corresponding block</p>
   </li>
-  <li>@brief Writes a block starting at the given address.</li>
-  <li>This function writes both a header and footer, where the location of the</li>
-  <li>footer is computed in relation to the header.</li>
+  <li>@brief Writes a block starting at the given address.
+This function writes both a header and footer, where the location of the footer
+is computed in relation to the header.</li>
   <li>@param[out] block The location to begin writing the block header</li>
   <li>@param[in] size The size of the new block</li>
   <li>@param[in] alloc The allocation status of the new block</li>
@@ -162,53 +157,52 @@
   <li>
     <p>@param[in] p_mini The mini status of the previous block</p>
   </li>
-  <li>@brief Finds the next consecutive block on the heap.</li>
-  <li>This function accesses the next block in the “implicit list” of the heap</li>
-  <li>by adding the size of the block.</li>
+  <li>@brief Finds the next consecutive block on the heap.
+This function accesses the next block in the “implicit list” of the heap by
+adding the size of the block.</li>
   <li>@param[in] block A block in the heap</li>
   <li>@return The next consecutive block on the heap</li>
   <li>
     <p>@pre The block is not the epilogue</p>
   </li>
-  <li>@brief Merges two free blocks if they are next to each other in the heap.</li>
-  <li>Only uses “find_prev” if the previous block is a non-mini free block. Checks</li>
-  <li>for this by finding the p_alloc and p_mini bits of the input block. If the</li>
-  <li>previous block is a mini, then subtracts the minimum block size from the</li>
-  <li>block.</li>
+  <li>@brief Merges two free blocks if they are next to each other in the heap.
+Only uses “find_prev” if the previous block is a non-mini free block. Checks for
+this by finding the p_alloc and p_mini bits of the input block. If the previous
+block is a mini, then subtracts the minimum block size from the block.</li>
   <li>@param[in] block</li>
   <li>@return block</li>
   <li>
     <p>@post There are no free blocks next to the block</p>
   </li>
-  <li>@brief Finds a free block for an allocation.</li>
-  <li>Finds a mini or non-mini block. If no blocks in the seglist fit, searches</li>
-  <li>the next seglist with larger sizes. If no seglists fit, returns NULL.</li>
+  <li>@brief Finds a free block for an allocation.
+Finds a mini or non-mini block. If no blocks in the seglist fit, searches the
+next seglist with larger sizes. If no seglists fit, returns NULL.</li>
   <li>@param[in] asize The size of the allocated block</li>
   <li>
     <p>@return A free block with size &gt; asize</p>
   </li>
-  <li>@brief Checks the heap for errors.</li>
-  <li>Runs silently.</li>
+  <li>@brief Checks the heap for errors.
+Runs silently.</li>
   <li>
     <p>@return False if errors in heap</p>
   </li>
-  <li>@brief Checks the seglists for errors.</li>
-  <li>Runs silently.</li>
+  <li>@brief Checks the seglists for errors.
+Runs silently.</li>
   <li>
     <p>@return False if errors in explicit list</p>
   </li>
-  <li>@brief Allocates a free block.</li>
-  <li>Searches seglists for a free block of size greater than ‘size’. If no block</li>
-  <li>is found, extends the heap. Rewrites the allocated block. Splits block if</li>
-  <li>the unused portion of the block is greater than the minimum block size.</li>
+  <li>@brief Allocates a free block.
+Searches seglists for a free block of size greater than ‘size’. If no block is
+found, extends the heap. Rewrites the allocated block. Splits block if the
+unused portion of the block is greater than the minimum block size.</li>
   <li>@param[in] size</li>
   <li>
     <p>@return A pointer to the payload of the allocated block</p>
   </li>
-  <li>@brief Frees an allocated block.</li>
-  <li>Inserts the free block into seglist of size that is an upper bound of the</li>
-  <li>block size. Coalesces if there are free blocks next to the block. Sets its</li>
-  <li>allocation and mini status bits into the next block.</li>
+  <li>@brief Frees an allocated block.
+Inserts the free block into seglist of size that is an upper bound of the block
+size. Coalesces if there are free blocks next to the block. Sets its allocation
+and mini status bits into the next block.</li>
   <li>@param[in] bp Payload of an allocated block</li>
   <li>@param[out] A free block</li>
 </ul>
