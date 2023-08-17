@@ -17,8 +17,6 @@ and creating a presented group over this relation. Then we introduce `braid_grou
 as a special case of `artin_tits`.
 
 /-
-How we implement the Artin-Tits group and then the braid group:
-
 Let `F` be a finite set. Define a square matrix `m` to be the Coxeter matrix
 over `F`. For `a,b ∈ F` and `n ≥ 2`, the entry of the matrix. (break?) we set the notation
 `∏ (a,b : n) = (ab)^{n / 2}` if `n` is even and `∏ (a,b : n) = (ab)^{(n-1) / 2}(a)`
