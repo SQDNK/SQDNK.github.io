@@ -18,40 +18,27 @@ as a special case of `artin_tits`.
 
 /-
 Let `F` be a finite set. Define a square matrix `m` to be the Coxeter matrix
-over `F`. For `a,b ∈ F` and `n ≥ 2`, the entry of the matrix. (break?) we set the notation
+over `F`. For `a,b ∈ F` and `n ≥ 2`, the entry of the matrix. we set the notation
 `∏ (a,b : n) = (ab)^{n / 2}` if `n` is even and `∏ (a,b : n) = (ab)^{(n-1) / 2}(a)`
---is there an extra `a` here?  
-if `n` is odd, where `∏` is the product, versus `Π` which is a Pi type. -- maybe
-say it's a clarification on notation? --def or checkable equality? -- power notation?
-right of the equality is a word of the free group. ∏ is a word? doesn't do anything
-for the matrix implementation. what's the size of the matrix.
+if `n` is odd, where `∏` is the product, versus `Π` which is a Pi type.
 
 In the implementation below, `m` is of type `S → S → ℕ` where each `S` is an index
-into the matrix. So for `s,t` the indices, `m s s = 1`, `m s t ≥ 2`. -- could
-be implied in the `S → S → ℕ`?
--- don't know how big S is. how does S relate to F?
+into the matrix. So for `s,t` the indices, `m s s = 1`, `m s t ≥ 2`.
 
-The group `A` is called an Artin-Tits group if it is presented by -- types first then
-predicate: `for...` first then
-`A = ⟨ F | ∏ (s,t : n₁) = ∏ (t,s : n₂) for s,t ∈ F, s ≠ t (unnecessary? may be a
-red flag because seems unnecessary?), and n₁,n₂ entries`
-`of the matrix (which matrix?), n₁,n₂ ≠ ∞ (unnecessary since matrix cannot contain
-infinity anyways)⟩`. explain notation ⟨ generators | relations ⟩. can just say
-entries are two or larger? which entries are `n₁, n₂`: they are the entries of (s,t)
-and (t,s). notice constraint `n1 n2` are the same, so
-the matrix is symmetric.
+The group `A` is called an Artin-Tits group if it is presented by
+`A = ⟨ F | ∏ (s,t : n₁) = ∏ (t,s : n₂) for s,t ∈ F, s ≠ t` , and `n₁,n₂` entries
+of the matrix, `n₁,n₂ ≠ ∞`. `n₁, n₂` are the entries of `(s,t)` and `(t,s)`.
+notice constraint `n1 n2` are the same, so the matrix is symmetric.
 This is saying `s * t * s * t ... = t * s * t * s ...` where the number of `s`
 and `t`'s depend on the matrix entry. The length of either side of the equation
-are the same. -- n₁ n₂ should be the same. Note that the indices into the matrix and the generators themselves
-are the same. That is because the generators are implemented as the numbers
-`0, 1, 2, ...`. For example, in a 3-braid group, the generators are `0, 1` and
-the matrix looks like
+are the same. `n₁ n₂` should be the same. Note that the indices into the matrix
+and the generators themselves are the same. That is because the generators are
+implemented as the numbers `0, 1, 2, ...`. For example, in a 3-braid group,
+the generators are `0, 1` and the matrix looks like
 `[ 1 3 ]`
 `[ 3 1 ]`  
 where `(0,0) = 1`, `(0,1) = 3`, `(1,0) = 3`, and `(1,1) = 1`. `()` not introduced
 as index, in fact, index is introduced above as ∏ (s,t : n₁).
-go hard on the example: F is a set {0,1}, the relations are..., the matrix is ...
-given matrix this over finite set that, write out presentation.
 
 The braid group is a special case of the Artin-Tits group where the entry in the
 matrix is `3` if the indices are next to each other and `2` if they are not.
@@ -168,7 +155,6 @@ Details:
   `def test (a : fin 5) := a - (2 : fin 5)`
 
   `#eval test 0` which evaluates to `3 ≣ -2 mod 5` since `-2 = 5(-1) + 3`, rather than `2`.
-  --credit the person.
 
 - The type of the index is `fin (n-1)`, which has `n-1` terms/elements.
   An element of `fin n` is a natural number `x` and a proof that `x` is less

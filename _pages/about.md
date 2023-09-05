@@ -19,8 +19,8 @@ cv_pdf: Holly_Liu_Resume.pdf
 ---
 
 Hi, I'm Holly. I worked at IBM for a bit after graduating from Carnegie Mellon in 2021.
-My interests include marathon running (still a very far-fetched goal), gaming (waiting
-for Hades 2), figure drawing, 2D and 3D animation, math, and politics. Feel free
+My interests include marathon running (still a very far-fetched goal), gaming (I like
+Breath of the Wild, waiting for Hades 2), figure drawing, 2D and 3D animation, math, and politics. Feel free
 to reach out!
 
 Currently I'm looking for work.
@@ -28,5 +28,5 @@ Currently I'm looking for work.
 [Github](https://github.com/SQDNK)
 [LinkedIn](https://www.linkedin.com/in/holly-liu-595178163/)
 [Facebook](https://www.facebook.com/holly.liu.501/)
-[Email](hsliu@alumni.cmu.edu)
+Email: hsliu@alumni.cmu.edu
 Discord: nampp0

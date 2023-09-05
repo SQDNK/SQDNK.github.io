@@ -8,7 +8,7 @@ category: work
 
 private repo. [C/C++]
 
-These are some functions I used / wrote.
+These are examples of my code design.
 
 /--------------------------------Seglist design--------------------------------/
 
