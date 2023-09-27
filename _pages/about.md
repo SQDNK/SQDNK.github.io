@@ -19,9 +19,7 @@ cv_pdf: Holly_Liu_Resume.pdf
 ---
 
 Hi, I'm Holly. I worked at IBM for a bit after graduating from Carnegie Mellon in 2021.
-My interests include marathon running (still a very far-fetched goal), gaming (I like
-Breath of the Wild, waiting for Hades 2), figure drawing, 2D and 3D animation, math, and politics. Feel free
-to reach out!
+My interests include marathon running (a very far-fetched goal), gaming (waiting for Hades 2), figure drawing, 2D and 3D animation, math, and the political climate. Feel free to reach out.
 
 Currently I'm looking for work.
 
