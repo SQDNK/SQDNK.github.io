@@ -92,4 +92,4 @@ block is a mini, the third to last bit of each block is set if so.
 - @param[in] bp Payload of an allocated block
 - @param[out] A free block
 
-For this project, I maxed out the throughput and utilization metrics but could not get the final 1% to achieve a grade of 100%.
+For this project, I maxed out the throughput and utilization metrics but interestingly enough, could not figure out the final 1% to achieve a grade of 100%.
