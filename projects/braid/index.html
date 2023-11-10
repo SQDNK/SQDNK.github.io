@@ -110,15 +110,15 @@
           </header>
 
           <article>
-            <p>This was my project when I was an intern at <a href="https://textiles-lab.github.io/" rel="external nofollow noopener" target="_blank">the CMU Textiles Lab</a>.</p>
+            <p>private repo. [Lean]</p>
+
+<p>This was my project when I was an intern at <a href="https://textiles-lab.github.io/" rel="external nofollow noopener" target="_blank">the CMU Textiles Lab</a>.</p>
 
 <p>The general idea is to define braid groups as a case of Artin groups. This was used in this
 <a href="https://textiles-lab.github.io/publications/2021-braid-transfer-plan/" rel="external nofollow noopener" target="_blank">research paper</a>
 which presents the “first complete, discrete representation of the machine’s loop-tangling process”.</p>
 
-<p>First we introduce <code class="language-plaintext highlighter-rouge">artin_tits</code> by inductively constructing its relation
-and creating a presented group over this relation. Then we introduce <code class="language-plaintext highlighter-rouge">braid_group</code>
-as a special case of <code class="language-plaintext highlighter-rouge">artin_tits</code>.</p>
+<p>First we introduce <code class="language-plaintext highlighter-rouge">artin_tits</code>, then introduce <code class="language-plaintext highlighter-rouge">braid_group</code> using the <code class="language-plaintext highlighter-rouge">artin_tits</code> groups definition. To create the <code class="language-plaintext highlighter-rouge">artin-tits</code> group, we can inductively construct its relation and create a presented group over this relation.</p>
 
 <p>/-
 Let <code class="language-plaintext highlighter-rouge">F</code> be a finite set. Define a square matrix <code class="language-plaintext highlighter-rouge">m</code> to be the Coxeter matrix
@@ -158,9 +158,7 @@ the alternating sequence <code class="language-plaintext highlighter-rouge">s * 
 <p>Input:
 <code class="language-plaintext highlighter-rouge">S : Type*</code> the type of the index into the Coxeter matrix. <code class="language-plaintext highlighter-rouge">Type*</code> is an arbitrary
 type. For braid groups, the type is <code class="language-plaintext highlighter-rouge">fin (n-1)</code> (described in <code class="language-plaintext highlighter-rouge">braid_group</code>).
-<code class="language-plaintext highlighter-rouge">N</code> the length of the word
-<code class="language-plaintext highlighter-rouge">S</code> the row (?) index into the Coxeter matrix – (?) say what this means, also a todo list
-<code class="language-plaintext highlighter-rouge">S</code> the col (?) index into the Coxeter matrix</p>
+<code class="language-plaintext highlighter-rouge">N</code> the length of the word</p>
 
 <p>Output:
 <code class="language-plaintext highlighter-rouge">x : free_group S</code> a word of the free group on the type <code class="language-plaintext highlighter-rouge">S</code>.</p>
@@ -174,8 +172,6 @@ type. For braid groups, the type is <code class="language-plaintext highlighter-
 length <code class="language-plaintext highlighter-rouge">0</code> (?) as a base case for this recursive function.</li>
   <li>The method <code class="language-plaintext highlighter-rouge">free_group.of</code> maps a type <code class="language-plaintext highlighter-rouge">S</code> to the free group on <code class="language-plaintext highlighter-rouge">S</code>. So
 <code class="language-plaintext highlighter-rouge">free_group.of s</code> is an element (word) of the free group on <code class="language-plaintext highlighter-rouge">S</code>.</li>
-  <li>(This function might be building the number of <code class="language-plaintext highlighter-rouge">s</code>’s and <code class="language-plaintext highlighter-rouge">t</code>’s to be equal to the entry
-<code class="language-plaintext highlighter-rouge">n</code> rather than <code class="language-plaintext highlighter-rouge">n/2</code> if it’s even and <code class="language-plaintext highlighter-rouge">(n-1)/2</code> if it’s odd. (?))</li>
   <li>
 <code class="language-plaintext highlighter-rouge">0 _ _ </code> is a 0-length word. The <code class="language-plaintext highlighter-rouge">_ _</code> are implicit variables of type <code class="language-plaintext highlighter-rouge">S</code> (?).</li>
   <li>
@@ -230,14 +226,14 @@ arbitrary type.
 
 <p>Output:
 <code class="language-plaintext highlighter-rouge">presented_group (artin_tits_rels S m)</code> the presented group with the relations
-<code class="language-plaintext highlighter-rouge">artin_tits_rels</code>. –output is a value, not a type. this is fine</p>
+<code class="language-plaintext highlighter-rouge">artin_tits_rels</code>.</p>
 
 <p>Details:</p>
 
 <ul>
   <li>
 <code class="language-plaintext highlighter-rouge">abbreviation</code> is used to make the definitions reducible so Lean can see
-that they’re groups (_**may need to elaborate).
+that they’re groups.
 -/
 – This code was written with the help of @Kyle Miller.
     <div class="language-plaintext highlighter-rouge">
@@ -247,8 +243,9 @@ presented_group (artin_tits_rels S m)
   </li>
 </ul>
 
-<p>/- ————————— Braid group —————————– -/
-/–
+<p>/- ————————— Braid group —————————– -/</p>
+
+<p>/–
 Construct the braid group as a special case of Artin-Tits.</p>
 
 <p>Input:
