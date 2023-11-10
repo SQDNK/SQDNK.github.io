@@ -6,7 +6,7 @@ subtitle: programming, animation, and math
 
 profile:
   align: right
-  image: prof_pic.jpg
+  image: prof_pic.jpeg
   image_circular: false # crops the image to make it circular
   address: >
     <p>Westchester County, NY</p>
