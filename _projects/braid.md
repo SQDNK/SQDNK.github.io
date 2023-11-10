@@ -6,15 +6,15 @@ importance: 3
 category: work
 ---
 
+private repo. [Lean]
+
 This was my project when I was an intern at <a href="https://textiles-lab.github.io/">the CMU Textiles Lab</a>.
 
 The general idea is to define braid groups as a case of Artin groups. This was used in this
 <a href="https://textiles-lab.github.io/publications/2021-braid-transfer-plan/">research paper</a>
 which presents the "first complete, discrete representation of the machine’s loop-tangling process".
 
-First we introduce `artin_tits` by inductively constructing its relation
-and creating a presented group over this relation. Then we introduce `braid_group`
-as a special case of `artin_tits`.
+First we introduce `artin_tits`, then introduce `braid_group` using the `artin_tits` groups definition. To create the `artin-tits` group, we can inductively construct its relation and create a presented group over this relation.
 
 /-
 Let `F` be a finite set. Define a square matrix `m` to be the Coxeter matrix
@@ -55,8 +55,6 @@ Input:
 `S : Type*` the type of the index into the Coxeter matrix. `Type*` is an arbitrary
 type. For braid groups, the type is `fin (n-1)` (described in `braid_group`).
 `N` the length of the word
-`S` the row (?) index into the Coxeter matrix -- (?) say what this means, also a todo list
-`S` the col (?) index into the Coxeter matrix
 
 Output:
 `x : free_group S` a word of the free group on the type `S`.
@@ -68,8 +66,6 @@ Details:
   length `0` (?) as a base case for this recursive function.
 - The method `free_group.of` maps a type `S` to the free group on `S`. So
   `free_group.of s` is an element (word) of the free group on `S`.
-- (This function might be building the number of `s`'s and `t`'s to be equal to the entry
-  `n` rather than `n/2` if it's even and `(n-1)/2` if it's odd. (?))
 - `0 _ _ ` is a 0-length word. The `_ _` are implicit variables of type `S` (?).
 - `(n+1) s t := ...` constructs the `free_group.of s * alt n t s` if
   the input is greater than `0` (?). This is recursively constructing the sequence.  
@@ -117,12 +113,12 @@ arbitrary type.
 
 Output:
 `presented_group (artin_tits_rels S m)` the presented group with the relations
-`artin_tits_rels`. --output is a value, not a type. this is fine
+`artin_tits_rels`.
 
 Details:
 
 - `abbreviation` is used to make the definitions reducible so Lean can see
-  that they're groups (\_\*\*may need to elaborate).
+  that they're groups.
   -/
   -- This code was written with the help of @Kyle Miller.
   ```
@@ -131,6 +127,7 @@ Details:
   ```
 
 /- --------------------------- Braid group ----------------------------- -/
+
 /--
 Construct the braid group as a special case of Artin-Tits.
 
