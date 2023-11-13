@@ -15,7 +15,7 @@ news: false # includes a list of news items
 selected_papers: false # includes a list of papers marked as "selected={true}"
 social: false # includes social icons at the bottom of the page
 
-cv_pdf: Holly_Liu_Resume.pdf
+cv_pdf: holly-liu-resume.pdf
 ---
 
 Hi, I'm Holly. I worked at IBM for a bit after graduating from Carnegie Mellon in 2021. I have industry experience in web development using React.js, Node.js and debugging / tech support experience with IBM Assembly and Parallel Sysplex. Back in college, I used to work on animations (Maya), games (Unity), and computer graphics (C++).
