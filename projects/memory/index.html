@@ -112,7 +112,7 @@
           <article>
             <p>private repo. [C/C++]</p>
 
-<p>These are examples of my code design.</p>
+<p>This is my code sample.</p>
 
 <p>/——————————–Seglist design——————————–/</p>
 
@@ -126,86 +126,315 @@ previous block in function coalesce_block, the second to last bit of each
 block is set if the previous block is allocated. To know if the previous
 block is a mini, the third to last bit of each block is set if so.</p>
 
-<p>/———————————-Functions———————————–/</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * @file mm.c
+ * @brief A 64-bit struct-based explicit seg list memory allocator
+ *
+ * 15-213: Introduction to Computer Systems
+ *
+ * @author holly liu &lt;hsliu@andrew.cmu.edu&gt;
+ */</span>
 
-<ul>
-  <li>@brief Packs the <code class="language-plaintext highlighter-rouge">size</code>, <code class="language-plaintext highlighter-rouge">alloc</code>, ‘p_alloc’, and ‘p_mini’ of a block into a
-word suitable for use as a packed value.
-Packed values are used for both headers and footers.
-The allocation status is packed into the lowest bit of the word. The
-allocation status of the previous block is packed into the second lowest bit.
-The mini status of the previous block is packed into the third lowest bit.</li>
-  <li>@param[in] size The size of the block being represented</li>
-  <li>@param[in] alloc True if the block is allocated</li>
-  <li>@param[in] p_alloc True if the previous block is allocated</li>
-  <li>@param[in] p_mini True if the previous block is a mini</li>
-  <li>
-    <p>@return The packed value</p>
-  </li>
-  <li>@brief Given a payload pointer, returns a pointer to the corresponding block.</li>
-  <li>@param[in] bp A pointer to a block’s payload</li>
-  <li>
-    <p>@return The corresponding block</p>
-  </li>
-  <li>@brief Writes a block starting at the given address.
-This function writes both a header and footer, where the location of the footer
-is computed in relation to the header.</li>
-  <li>@param[out] block The location to begin writing the block header</li>
-  <li>@param[in] size The size of the new block</li>
-  <li>@param[in] alloc The allocation status of the new block</li>
-  <li>@param[in] p_alloc The allocation status of the previous block</li>
-  <li>
-    <p>@param[in] p_mini The mini status of the previous block</p>
-  </li>
-  <li>@brief Finds the next consecutive block on the heap.
-This function accesses the next block in the “implicit list” of the heap by
-adding the size of the block.</li>
-  <li>@param[in] block A block in the heap</li>
-  <li>@return The next consecutive block on the heap</li>
-  <li>
-    <p>@pre The block is not the epilogue</p>
-  </li>
-  <li>@brief Merges two free blocks if they are next to each other in the heap.
-Only uses “find_prev” if the previous block is a non-mini free block. Checks for
-this by finding the p_alloc and p_mini bits of the input block. If the previous
-block is a mini, then subtracts the minimum block size from the block.</li>
-  <li>@param[in] block</li>
-  <li>@return block</li>
-  <li>
-    <p>@post There are no free blocks next to the block</p>
-  </li>
-  <li>@brief Finds a free block for an allocation.
-Finds a mini or non-mini block. If no blocks in the seglist fit, searches the
-next seglist with larger sizes. If no seglists fit, returns NULL.</li>
-  <li>@param[in] asize The size of the allocated block</li>
-  <li>
-    <p>@return A free block with size &gt; asize</p>
-  </li>
-  <li>@brief Checks the heap for errors.
-Runs silently.</li>
-  <li>
-    <p>@return False if errors in heap</p>
-  </li>
-  <li>@brief Checks the seglists for errors.
-Runs silently.</li>
-  <li>
-    <p>@return False if errors in explicit list</p>
-  </li>
-  <li>@brief Allocates a free block.
-Searches seglists for a free block of size greater than ‘size’. If no block is
-found, extends the heap. Rewrites the allocated block. Splits block if the
-unused portion of the block is greater than the minimum block size.</li>
-  <li>@param[in] size</li>
-  <li>
-    <p>@return A pointer to the payload of the allocated block</p>
-  </li>
-  <li>@brief Frees an allocated block.
-Inserts the free block into seglist of size that is an upper bound of the block
-size. Coalesces if there are free blocks next to the block. Sets its allocation
-and mini status bits into the next block.</li>
-  <li>@param[in] bp Payload of an allocated block</li>
-  <li>@param[out] A free block</li>
-</ul>
+<span class="cp">#include</span> <span class="cpf">&lt;assert.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;inttypes.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdbool.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stddef.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span>
+<span class="cp">#include</span> <span class="cpf">"memlib.h"</span><span class="cp">
+#include</span> <span class="cpf">"mm.h"</span><span class="cp">
+</span>
+<span class="c1">// ... omitted lines ... //</span>
+
+<span class="cm">/** @brief Stores the block header. If allocated, stores the footerless payload.
+ *         If free, stores the previous and next pointers to other blocks.
+ *         Block size is always &gt; 16.
+ *
+ * The block is used as memory that stores a payload of information to
+ * simulate a memory allocator.
+ */</span>
+<span class="k">struct</span> <span class="n">block</span>
+<span class="p">{</span>
+    <span class="cm">/** @brief Header contains size + allocation flag */</span>
+    <span class="n">word_t</span> <span class="n">header</span><span class="p">;</span>
+
+    <span class="cm">/**
+     * @brief A pointer to the block payload.
+     *
+     * WARNING: DO NOT cast this pointer to/from other types! Instead, you
+     * should use a union to alias this zero-length array with another struct,
+     * in order to store additional types of data in the payload memory.
+     */</span>
+    <span class="k">union</span>
+    <span class="p">{</span>
+        <span class="k">struct</span>
+        <span class="p">{</span>
+            <span class="n">block_t</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+            <span class="n">block_t</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="kt">char</span> <span class="n">payload</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">m_block</span>
+<span class="p">{</span>
+    <span class="cm">/** @brief Header contains size + allocation flag */</span>
+    <span class="n">word_t</span> <span class="n">header</span><span class="p">;</span>
+
+    <span class="cm">/**
+     * @brief A pointer to the block payload.
+     *
+     * WARNING: DO NOT cast this pointer to/from other types! Instead, you
+     * should use a union to alias this zero-length array with another struct,
+     * in order to store additional types of data in the payload memory.
+     */</span>
+    <span class="k">union</span>
+    <span class="p">{</span>
+        <span class="k">struct</span>
+        <span class="p">{</span>
+            <span class="n">m_block_t</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="kt">char</span> <span class="n">payload</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="cm">/* Global variables */</span>
+
+<span class="cm">/** @brief Pointer to first block in the heap. Used for checkheap. */</span>
+<span class="k">static</span> <span class="n">block_t</span> <span class="o">*</span><span class="n">heap_start</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="cm">/** @brief Seglist buckets of blocks of size &gt; 16 */</span>
+<span class="k">static</span> <span class="n">block_t</span> <span class="o">*</span><span class="n">seg_list</span><span class="p">[</span><span class="mi">14</span><span class="p">];</span>
+<span class="k">static</span> <span class="k">const</span> <span class="kt">size_t</span> <span class="n">c</span> <span class="o">=</span> <span class="n">min_block_size</span><span class="p">;</span>
+<span class="k">static</span> <span class="k">const</span> <span class="kt">size_t</span> <span class="n">seg_size</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">9</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">12</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">16</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">38</span><span class="p">,</span>
+                                    <span class="n">c</span> <span class="o">*</span> <span class="mi">65</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">129</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">257</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">513</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">1025</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">2049</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="mi">4097</span><span class="p">};</span>
+<span class="k">static</span> <span class="k">const</span> <span class="kt">size_t</span> <span class="n">list_num</span> <span class="o">=</span> <span class="mi">14</span><span class="p">;</span>
+
+<span class="cm">/** @brief Mini seglist bucket. Only for block sizes == 16  */</span>
+<span class="k">static</span> <span class="n">m_block_t</span> <span class="o">*</span><span class="n">m_seg_list</span><span class="p">;</span>
+<span class="k">static</span> <span class="k">const</span> <span class="kt">size_t</span> <span class="n">min_seg_size</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
+
+<span class="c1">// ... omitted lines ... //</span>
+
+<span class="cm">/**
+ * @brief Merges two free blocks if they are next to each other in the heap.
+ *
+ * Only uses "find_prev" if the previous block is a non-mini free block. Checks
+ * for this by finding the p_alloc and p_mini bits of the input block. If the
+ * previous block is a mini, then subtracts the minimum block size from the
+ * block.
+ *
+ * @param[in] block
+ * @return block
+ * @post There are no free blocks next to the block
+ */</span>
+<span class="k">static</span> <span class="n">block_t</span> <span class="o">*</span><span class="nf">coalesce_block</span><span class="p">(</span><span class="n">block_t</span> <span class="o">*</span><span class="n">block</span><span class="p">)</span>
+<span class="p">{</span>
+
+    <span class="c1">// find_prev(block) does not work if previous footer is prologue</span>
+    <span class="n">block_t</span> <span class="o">*</span><span class="n">p_block</span><span class="p">,</span> <span class="o">*</span><span class="n">n_block</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="c1">// find prev block and its alloc and mini status</span>
+    <span class="n">bool</span> <span class="n">p_alloc</span> <span class="o">=</span> <span class="n">get_p_alloc</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+    <span class="n">bool</span> <span class="n">p_mini</span> <span class="o">=</span> <span class="n">get_p_m</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+
+    <span class="c1">// non-mini free blocks have footers, can use find_prev</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">p_alloc</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">p_mini</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">p_block</span> <span class="o">=</span> <span class="n">find_prev</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="c1">// all minis are size 16</span>
+            <span class="n">p_block</span> <span class="o">=</span> <span class="p">(</span><span class="n">block_t</span> <span class="o">*</span><span class="p">)((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">block</span> <span class="o">-</span> <span class="n">min_seg_size</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// find next block and its alloc</span>
+    <span class="n">n_block</span> <span class="o">=</span> <span class="n">find_next</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+    <span class="n">bool</span> <span class="n">n_alloc</span> <span class="o">=</span> <span class="n">get_alloc</span><span class="p">(</span><span class="n">n_block</span><span class="p">);</span>
+
+    <span class="c1">// previous block packed as allocated by default</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">p_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">n_alloc</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="n">find_index</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+        <span class="n">insert_block</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">block</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">p_alloc</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">n_alloc</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="n">find_index</span><span class="p">(</span><span class="n">n_block</span><span class="p">);</span>
+        <span class="n">remove_block</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n_block</span><span class="p">);</span>
+
+        <span class="n">merge_blocks</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">n_block</span><span class="p">);</span>
+
+        <span class="kt">size_t</span> <span class="n">j</span> <span class="o">=</span> <span class="n">find_index</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+        <span class="n">insert_block</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">block</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">p_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">n_alloc</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// remove from seglist b/c size will change</span>
+        <span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="n">find_index</span><span class="p">(</span><span class="n">p_block</span><span class="p">);</span>
+        <span class="n">remove_block</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">p_block</span><span class="p">);</span>
+
+        <span class="c1">// p_block is never NULL- prologue is always allocated</span>
+        <span class="n">merge_blocks</span><span class="p">(</span><span class="n">p_block</span><span class="p">,</span> <span class="n">block</span><span class="p">);</span>
+
+        <span class="kt">size_t</span> <span class="n">j</span> <span class="o">=</span> <span class="n">find_index</span><span class="p">(</span><span class="n">p_block</span><span class="p">);</span>
+        <span class="n">insert_block</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">p_block</span><span class="p">);</span>
+
+        <span class="n">block</span> <span class="o">=</span> <span class="n">p_block</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span> <span class="c1">// !p_alloc &amp;&amp; !n_alloc</span>
+        <span class="c1">// remove b/c size will change</span>
+        <span class="kt">size_t</span> <span class="n">a</span> <span class="o">=</span> <span class="n">find_index</span><span class="p">(</span><span class="n">p_block</span><span class="p">);</span>
+        <span class="n">remove_block</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p_block</span><span class="p">);</span>
+
+        <span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="n">find_index</span><span class="p">(</span><span class="n">n_block</span><span class="p">);</span>
+        <span class="n">remove_block</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n_block</span><span class="p">);</span>
+
+        <span class="n">merge_blocks</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">n_block</span><span class="p">);</span>
+        <span class="c1">// p_block is never NULL- prologue is always allocated</span>
+        <span class="n">merge_blocks</span><span class="p">(</span><span class="n">p_block</span><span class="p">,</span> <span class="n">block</span><span class="p">);</span>
+
+        <span class="kt">size_t</span> <span class="n">j</span> <span class="o">=</span> <span class="n">find_index</span><span class="p">(</span><span class="n">p_block</span><span class="p">);</span>
+        <span class="n">insert_block</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">p_block</span><span class="p">);</span>
+
+        <span class="n">block</span> <span class="o">=</span> <span class="n">p_block</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">block</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * @brief Allocates a free block.
+ *
+ * Searches seglists for a free block of size greater than 'size'. If no block
+ * is found, extends the heap. Rewrites the allocated block. Splits block if
+ * the unused portion of the block is greater than the minimum block size.
+ *
+ * @param[in] size
+ * @return A pointer to the payload of the allocated block
+ */</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">dbg_requires</span><span class="p">(</span><span class="n">mm_checkheap</span><span class="p">(</span><span class="n">__LINE__</span><span class="p">));</span>
+
+    <span class="kt">size_t</span> <span class="n">asize</span><span class="p">;</span>      <span class="c1">// Adjusted block size</span>
+    <span class="kt">size_t</span> <span class="n">extendsize</span><span class="p">;</span> <span class="c1">// Amount to extend heap if no fit is found</span>
+    <span class="n">block_t</span> <span class="o">*</span><span class="n">block</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">bp</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="c1">// Initialize heap if it isn't initialized</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">heap_start</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">mm_init</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Ignore spurious request</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">dbg_ensures</span><span class="p">(</span><span class="n">mm_checkheap</span><span class="p">(</span><span class="n">__LINE__</span><span class="p">));</span>
+        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Adjust block size to include overhead and to meet alignment requirements</span>
+    <span class="n">asize</span> <span class="o">=</span> <span class="n">round_up</span><span class="p">(</span><span class="n">size</span> <span class="o">+</span> <span class="n">wsize</span><span class="p">,</span> <span class="n">dsize</span><span class="p">);</span>
+
+    <span class="c1">// Search the free list for a fit</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">find_fit</span><span class="p">(</span><span class="n">asize</span><span class="p">);</span>
+
+    <span class="c1">// If no fit is found, request more memory, and then and place the block</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">block</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// Always request at least chunksize</span>
+        <span class="n">extendsize</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">asize</span><span class="p">,</span> <span class="n">chunksize</span><span class="p">);</span>
+        <span class="c1">// block is in seglist b/c extend_heap updates list</span>
+        <span class="c1">// check if last block in heap is allocated by getting bits from epi</span>
+        <span class="kt">char</span> <span class="o">*</span><span class="n">last_block</span> <span class="o">=</span> <span class="n">mem_heap_hi</span><span class="p">()</span> <span class="o">-</span> <span class="mi">7</span><span class="p">;</span>
+        <span class="n">bool</span> <span class="n">p_alloc</span> <span class="o">=</span> <span class="n">get_p_alloc</span><span class="p">((</span><span class="n">block_t</span> <span class="o">*</span><span class="p">)</span><span class="n">last_block</span><span class="p">);</span>
+        <span class="n">bool</span> <span class="n">l_mini</span> <span class="o">=</span> <span class="n">get_p_m</span><span class="p">((</span><span class="n">block_t</span> <span class="o">*</span><span class="p">)</span><span class="n">last_block</span><span class="p">);</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">extend_heap</span><span class="p">(</span><span class="n">extendsize</span><span class="p">,</span> <span class="n">p_alloc</span><span class="p">,</span> <span class="n">l_mini</span><span class="p">);</span>
+        <span class="c1">// extend_heap returns an error</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">block</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// The block should be marked as free</span>
+    <span class="n">dbg_assert</span><span class="p">(</span><span class="o">!</span><span class="n">get_alloc</span><span class="p">(</span><span class="n">block</span><span class="p">));</span>
+
+    <span class="c1">// block no longer free</span>
+    <span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="n">find_index</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+    <span class="n">remove_block</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">block</span><span class="p">);</span>
+
+    <span class="c1">// Mark block as allocated</span>
+    <span class="kt">size_t</span> <span class="n">block_size</span> <span class="o">=</span> <span class="n">get_size</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+    <span class="c1">// free block is assumed to not be next to other free blocks</span>
+    <span class="n">write_block</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">block_size</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span> <span class="n">get_p_m</span><span class="p">(</span><span class="n">block</span><span class="p">));</span>
+
+    <span class="c1">// Try to split the block if too large</span>
+    <span class="c1">// split_block updates explicit list and p_alloc bit of next block</span>
+    <span class="n">split_block</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">asize</span><span class="p">);</span>
+
+    <span class="n">bp</span> <span class="o">=</span> <span class="n">header_to_payload</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+
+    <span class="n">dbg_ensures</span><span class="p">(</span><span class="n">mm_checkheap</span><span class="p">(</span><span class="n">__LINE__</span><span class="p">));</span>
+    <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * @brief Frees an allocated block.
+ *
+ * Inserts the free block into seglist of size that is an upper bound of the
+ * block size. Coalesces if there are free blocks next to the block. Sets its
+ * allocation and mini status bits into the next block.
+ *
+ * @param[in] bp Payload of an allocated block
+ * @param[out] A free block
+ */</span>
+<span class="kt">void</span> <span class="nf">free</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">dbg_requires</span><span class="p">(</span><span class="n">mm_checkheap</span><span class="p">(</span><span class="n">__LINE__</span><span class="p">));</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">bp</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">bool</span> <span class="n">p_mini_next</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+
+    <span class="n">block_t</span> <span class="o">*</span><span class="n">block</span> <span class="o">=</span> <span class="n">payload_to_header</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
+    <span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">get_size</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+
+    <span class="c1">// The block should be marked as allocated</span>
+    <span class="n">dbg_assert</span><span class="p">(</span><span class="n">get_alloc</span><span class="p">(</span><span class="n">block</span><span class="p">));</span>
+
+    <span class="c1">// Mark the block as free</span>
+    <span class="n">write_block</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="n">get_p_alloc</span><span class="p">(</span><span class="n">block</span><span class="p">),</span> <span class="n">get_p_m</span><span class="p">(</span><span class="n">block</span><span class="p">));</span>
+
+    <span class="c1">// Try to coalesce the block with its neighbors</span>
+    <span class="c1">// coalesce will insert regardless if coalesced</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">coalesce_block</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+
+    <span class="c1">// set p_alloc in next block to false, set mini bit in next block</span>
+    <span class="n">block_t</span> <span class="o">*</span><span class="n">block_c_next</span> <span class="o">=</span> <span class="n">find_next</span><span class="p">(</span><span class="n">block</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">get_size</span><span class="p">(</span><span class="n">block</span><span class="p">)</span> <span class="o">==</span> <span class="n">min_seg_size</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">p_mini_next</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">block_c_next</span><span class="o">-&gt;</span><span class="n">header</span> <span class="o">=</span> <span class="n">pack</span><span class="p">(</span><span class="n">get_size</span><span class="p">(</span><span class="n">block_c_next</span><span class="p">),</span> <span class="nb">true</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span>
+                                <span class="n">p_mini_next</span><span class="p">);</span>
+
+    <span class="n">dbg_ensures</span><span class="p">(</span><span class="n">mm_checkheap</span><span class="p">(</span><span class="n">__LINE__</span><span class="p">));</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
 
 <p>For this project, I maxed out the throughput and utilization metrics but interestingly enough, could not figure out the final 1% to achieve a grade of 100%.</p>
 
