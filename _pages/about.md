@@ -4,13 +4,6 @@ title: about
 permalink: /
 subtitle: programming, animation, and math
 
-profile:
-  align: right
-  image: prof_pic.jpeg
-  image_circular: false # crops the image to make it circular
-  address: >
-    <p>Westchester County, NY</p>
-
 news: false # includes a list of news items
 selected_papers: false # includes a list of papers marked as "selected={true}"
 social: false # includes social icons at the bottom of the page
