@@ -7,7 +7,7 @@ nav: false
 nav_order: 2
 display_categories: [work, fun]
 horizontal: false
-cv_pdf: Holly_Liu_Resume.pdf
+cv_pdf: holly-liu-resume.pdf
 ---
 
 <!-- pages/projects.md -->

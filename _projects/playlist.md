@@ -10,8 +10,6 @@ category: work
 <a href="https://github.com/SQDNK/playlist-generator">code. </a>
 [React.js, Express.js, Node.js, TailwindCSS]
 
-Deployment:
-
 Motivation: Spotify's current recommendation system uses user's entire history of tracks to find
 new songs. As an alternative, I wanted to see if better recommendations could be found by statistically
 analyzing a group of user-chosen songs based on their audio features alone.
@@ -23,5 +21,3 @@ This is then used to calibrate the recommendation api with a range (min, target,
 these specific features.
 
 Success: We can determine success by how much users liked the recommendations. This can concretely be the number of recommendations they added to their playlists and how often those songs are listened to.
-
-references:
